@@ -1,0 +1,43 @@
+package jchr.example;
+
+
+
+import runtime.primitive.LogicalInt;
+import util.arithmetics.primitives.intUtil;
+
+handler iuf {
+	solver runtime.primitive.IntEqualitySolver;
+
+	constraints 
+		make(int),
+		union(int, int),
+		find(int, LogicalInt Result),
+		
+		root(int Root, int Rank),
+		link(int Root1, int Root2),
+		arrow(int Node, int Parent) infix ?~>?;
+
+	rules {
+		variable int X, Y, Parent_x, Parent_y;
+		variable int Rank_x, Rank_y;
+        
+		variable int R, R_x, R_y;
+		variable LogicalInt LR, LR_x, LR_y;
+        
+		make @ make(X) <=> root(X,0);
+
+		union @ union(X, Y) <=> find(X, LR_x), find(Y, LR_y), link(LR_x, LR_y);
+
+		// path compression with immediate update thanks to logical variable
+		findNode @ X ?~>? Parent_x, find(X, LR) <=> find(Parent_x, LR), X ?~>? LR;
+		// return function result in second argument
+		findRoot @ root(X, _) \ find(X, LR) <=> LR = X;     /* found */
+		
+		// root treatment
+		linkEq   @ link(R, R) <=> true.
+		linkLeft @ link(R_x, R_y), root(R_x, Rank_x), root(R_y, Rank_y) <=> Rank_x >= Rank_y | 
+			R_y ?~>? R_x, root(R_x, intUtil.max(Rank_x, intUtil.inc(Rank_y)));
+		linkRight@ link(R_y, R_x), root(R_x, Rank_x), root(R_y, Rank_y) <=> Rank_x >= Rank_y | 
+			R_y ?~>? R_x, root(R_x, intUtil.max(Rank_x, intUtil.inc(Rank_y)));
+    }
+}

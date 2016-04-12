@@ -1,0 +1,95 @@
+import jchr.example.*;
+
+vim( s ){ exec( "/windows/gvim.bat " + s ); }
+
+import jchr.test.gcd.*;
+import be.kuleuven.jchr.runtime.*;
+import be.kuleuven.jchr.runtime.primitive.*;
+
+import java.util.Collection;
+
+
+gcd( i0, i1 ){
+            if (i0 < 0 || i1 < 0) {                
+                print( "factors > 1." );
+                return;
+            }
+            
+            // First we create a new JCHR constraint handler:
+            GcdHandler handler = new GcdHandler();
+            
+            // Next we tell the JCHR handler the following two constraints:             
+            handler.tellGcd(i0);
+            handler.tellGcd(i1);
+            
+            // Afterwards we can lookup the constraints in the 
+            // resulting constraint store:
+            Collection gcds = handler.getGcdConstraints();
+            long gcd;
+            
+            // This should be exactly one constraint, containing
+            // the greatest common divider:
+            //              (the exceptions should never occur)
+            if (gcds.size() != 1){
+            	print( "error." );
+            	return( -1 );
+            }else{
+                gcd = gcds.iterator().next().get$X0();
+            }
+			return gcd;            
+}
+
+import org.kohsuke.args4j.CmdLineParser;
+import java.io.*;
+import be.kuleuven.jchr.compiler.CHRIntermediateForm.builder.CHRIntermediateFormBuilder;
+import be.kuleuven.jchr.compiler.analysis.Analysor;
+import be.kuleuven.jchr.compiler.codeGeneration.CodeGenerator;
+import be.kuleuven.jchr.compiler.parser.CHRLexer;
+import be.kuleuven.jchr.compiler.parser.CHRParser;
+import be.kuleuven.jchr.compiler.parser.Options;
+
+compile( String file_ ){
+  File file = new File( file_ );
+  if( file.exists() ) compile( file );
+  compile( jchr.example.test.class.getResource( file_ ).openStream() );  
+}
+
+compile( String dir_, String file_ ){
+  File file = new File( dir_, file_ );
+  if( file.exists() ) compile( file );
+  compile( jchr.example.test.class.getResource( dir_ + "/" + file_ ).openStream() );
+}
+
+compile( File f_ ){
+  compile( new FileInputStream(f_) );
+}
+
+	compile( InputStream f_ ){
+		try {
+            Options options = new Options();
+            
+            // Parse the source file and build the intermediate model
+		    CHRLexer lexer = new CHRLexer(f_); //System.in);
+//            CHRLexer lexer = new CHRLexer(new FileInputStream(new File("examples", "leq.jchr")));
+            CHRIntermediateFormBuilder builder 
+                = new CHRIntermediateFormBuilder();
+		    CHRParser director = new CHRParser(lexer, builder, options);		    
+		    director.construct();
+            
+            // Command line arguments override those specified in the source 
+            CmdLineParser parser = new CmdLineParser();
+            parser.addOptionClass(options);
+            String [] args = {};
+            parser.parse(args);
+
+            // Optimise through static analysis
+            Analysor.analyse(builder.getResult(), options);
+            
+            // Generate the java files
+		    CodeGenerator.generateAllFiles(builder.getResult());
+		}
+		catch (Exception x) {
+			x.printStackTrace();
+			System.err.println();
+		}
+	}

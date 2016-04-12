@@ -1,0 +1,17 @@
+package jchr.example;
+
+
+import arithmetics.primitives.longUtil;
+
+handler gcd {
+	constraint gcd(long);
+	
+	rules {
+		variable long M, N;
+	
+		gcd(0) <=> true.
+		gcd(N) \ gcd(M) <=> M >= N | gcd(longUtil.sub(M, N)).
+	}
+}
+
+

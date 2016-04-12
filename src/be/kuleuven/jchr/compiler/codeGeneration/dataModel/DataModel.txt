@@ -1,0 +1,220 @@
+(root)
+	|
+	*- String handler
+	|
+	*- String currentIdentifier
+	|
+	*- typeVariables
+	|	|	
+	|	*- ( 0 )
+	|	|	|	
+	|	|	*- String name
+	|	|	|	
+	|	|	*- upperBounds
+	|	|		|	
+	|	|		*- ( 0 ) String type
+	|	|		|	
+	|	|		*- ...
+	|	*- ...
+	|
+	*- solvers
+	|	|	
+	|	*- ( 0 )
+	|	|	|	
+	|	|	*- String identifier
+	|	|	|	
+	|	|	*- String interface
+	|	|	
+	|	*- ...
+	|
+	*- constraints
+	|	|
+	|	*- ( identifier )
+	|	|	|
+	|	|	*- identifier
+	|	|	|
+	|	|	*- infix
+	|	|	|
+	|	|	*- variables
+	|	|	|	|
+	|	|	|	*- ( 0 )
+	|	|	|	|	|	
+	|	|	|	|	*- String identifier
+	|	|	|	|	|	
+	|	|	|	|	*- <VariableType> variableType
+	|	|	|	|	
+	|	|	|	*- ...
+	|	|	|
+	|	|	*- lookupCategories
+	|	|		|	
+	|	|		*- ( 0 )
+	|	|		|	|		
+	|	|		|	*- Integer index ( = 0 dus hier)
+	|	|		|	|		
+	|	|		|	*- String indexType ==> "NONE" || "HASH_MAP" || ... 
+	|	|		|	|		
+	|	|		|	*- Boolean master	
+	|	|		|	|	
+	|	|		|	*- lookupTypes	( zal er maar 1 zijn voor "NONE" uiteraard... )
+	|	|		|	|	|
+	|	|		|	|	*- ( 0 )
+	|	.		|	|	|	|
+	|	.		|	|	|	*- <Category> category
+	|	.		|	|	|	|
+	|			|	|	|	*- Integer index ( = 0 dus hier)	// -1 is speciale ALL-category!
+	|			|	|	|	|
+	|			|	|	|	*- guardinfos	 (enkel voor HASH_MAP uiteraard, leeg voor NONE en HASH_MAP_ALL)
+	|			|	|	|		|	
+	|			|	|	|		*- ( 0 )
+	|			|	|	|		|	|
+	|			|	|	|		|	*- String otherType
+	|			|	|	|		|	|
+	|			|	|	|		|	*- eq (net als een guardConjunct, met ONE_DUMMY en OTHER_DUMMY argument,
+	|			|	|	|		|			met ONE_DUMMY de variabele, OTHER_DUMMY other
+	|			|	|	|		*- ...	
+	|			|	|	*- ...
+	|			|	|	
+	|			|	*- variables 	(leeg voor NONE uiteraard)
+	|			|		|
+	|			|		*- ( 0 ) = <Variable> variable
+	|			|		|
+	|			|		*- ...
+	|			*- ...
+	|	
+	*- variableTypes
+	|	|
+	|	*- ( 0 )
+	|	|	|
+	|	|	*- String type
+	|	|	|
+	|	|	*- Boolean fixed
+	|	|	|
+	|	|	*- eq (net als een guardConjunct, met ONE_DUMMY en OTHER_DUMMY als argument)
+	|	|	
+	|	*-...
+	|
+	*- rules
+	|	|	
+	|	*- ( 0 )
+	|	|	|	
+	|	|	*- Integer type
+	|	|	|	
+	|	|	*- Boolean endsWithFailure
+	|	|	|
+	|	|	*- String identifier  // is da wel nodig ==> debugging redenen... !!!
+	|	|	|
+	|	|	*- head
+	|	|	|	|	
+	|	|	|	*- ( 0 )
+	|	|	|	|	|	
+	|	|	|	|	*- String identifier
+	|	|	|	|	|		
+	|	|	|	|	*- Integer nbr		// hoeveelste van deze constraint
+	|	|	|	|	|	
+	|	|	|	|	*- Boolean isRemoved
+	|	|	|	|	|	
+	|	|	|	|	*- Boolean isPassive
+	|	|	|	|	|	
+	|	|	|	|	*- arguments
+	|	|	|	|		|	
+	|	|	|	.		.	
+	|	|	|	.		.
+	|	|	|	.		.
+	|	|	|	
+	|	|	*- guard
+	|	|	|	|	
+	|	|	|	*- ( 0 )
+	|	|	|	|	|	
+	|	|	|	|	*- String type = "methodCall" // "infixConstraint"
+	|	|	|	|	|		
+	|	|	|	|	*- String methodName // String identifier
+	|	|	|	|	|
+	|	|	|	|	*- arguments
+	|	|	|	|		|	
+	|	|	|	.		.
+	|	|	|	.		.
+	|	|	|	.		.
+	|	|	|	
+	|	|	*- body
+	|	|		|	
+	|	|		*- ( 0 )
+	|	|		|	|		
+	|	|		|	*- type = "udConstraint" // "methodCall" // "infixConstraint" // "declaration" // "failure"
+	|	|		.	|	
+	|	|		.	*- String identifier // String methodName // String identifier // String declaringType
+	|	|		.	|
+	|	|			*- arguments
+	|	.				|
+	|	.				.
+	|	.				.
+	|					.
+	*- current
+	|	|
+	|	*- <Constraint> constraint
+	|	|
+	|	*- occurrences
+	|		|	
+	|		*- ( 0 )
+	|		|	|	
+	|		|	*- Integer ruleNbr
+	|		|	|
+	|		|	*- Integer occurrenceNbr // in de regel
+	|		|	|	
+	|		|	*- commandos ~> lijst van commando's, elk met een type
+	|		|						en specifieke informatie
+	|		*- ...
+	-
+						
+arguments:
+??????????
+arguments
+	|
+	*- ( 0 )
+	|	|
+	.	*- String type
+	. 	|
+	.	*- argumentInfo
+			...
+			
+"variable" ==> {String identifier, Boolean anonymous}
+"int" / "byte" / "char" / ... ==> {Number value}
+"string" ==> {String value}
+"boolean" ==> {Boolean boolean}
+"null", "one_dummy", "other_dummy" ==> {}
+"methodCall" ==> {methodName + arguments}
+"constructorCall" ==> {type + arguments}
+"className" ==> {String name}
+"field" ==> {arguments (1) + fieldName}
+"solver" ==> {identifier}
+
+	
+Commando's:
+???????????
+	|
+	*- type = "LOOKUP"
+	|
+	*- occurrence (uit head)
+	|
+	*- lookupType
+	|
+	*- arguments (op basis van guard-arguments,
+					evenveel als in het type dus, leeg voor NONE)
+
+	|	
+	*- type = "GUARD"
+	|
+	*- conjunct (uit guard)
+	
+	|
+	*- type = "COMMIT"
+	|
+	*- Integer ruleNbr
+	|
+	*- Integer occurrenceNbr
+	
+	|
+	*- type = "CHECK_FIRED"
+	|
+	*- Integer ruleNbr
+	|
+	*- Integer occurrenceNbr

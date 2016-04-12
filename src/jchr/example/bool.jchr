@@ -1,0 +1,132 @@
+package jchr.example;
+
+import runtime.primitive.LogicalBoolean;
+
+handler bool {
+	solver runtime.primitive.BooleanEqualitySolver;
+	
+	constraints bool(LogicalBoolean B),
+		and(LogicalBoolean X, LogicalBoolean Y, LogicalBoolean Result),
+		or(LogicalBoolean X, LogicalBoolean Y, LogicalBoolean Result),
+		xor(LogicalBoolean X, LogicalBoolean Y, LogicalBoolean Result),
+		neg(LogicalBoolean X, LogicalBoolean Result),
+		imp(LogicalBoolean X, LogicalBoolean Y);
+		
+	option(hashMap, false);
+	
+	rules {
+		variable LogicalBoolean X, Y, Z, A, B;
+	
+		bool(true) <=> true;
+		bool(false) <=> true;
+				
+		/*
+		 * and/3 specification
+		 *	and(0,0,0).
+		 *	and(0,1,0).
+		 * 	and(1,0,0).
+		 * 	and(1,1,1).
+		 */
+		
+		and(false,X,Y) <=> Y=false;
+		and(X,false,Y) <=> Y=false;
+		and(true,X,Y) <=> Y=X;
+		and(X,true,Y) <=> Y=X;
+		and(X,Y,true) <=> X=true,Y=true;
+		and(X,X,Z) <=> X=Z;
+		//and(X,Y,X) <=> imp(X,Y);
+		//and(X,Y,Y) <=> imp(Y,X);
+		and(X,Y,A) \ and(X,Y,B) <=> A=B;
+		and(X,Y,A) \ and(Y,X,B) <=> A=B;
+
+		/*
+		 * or/3 specification
+		 * 	or(0,0,0).
+		 * 	or(0,1,1).
+		 * 	or(1,0,1).
+		 * 	or(1,1,1).
+		 */
+		
+		or(false,X,Y) <=> Y=X;
+		or(X,false,Y) <=> Y=X;
+		or(X,Y,false) <=> X=false,Y=false;
+		or(true,X,Y) <=> Y=true;
+		or(X,true,Y) <=> Y=true;
+		or(X,X,Z) <=> X=Z;
+		//or(X,Y,X) <=> imp(Y,X);
+		//or(X,Y,Y) <=> imp(X,Y);
+		or(X,Y,A) \ or(X,Y,B) <=> A=B;
+		or(X,Y,A) \ or(Y,X,B) <=> A=B;
+
+		/*
+		 * xor/3 specification
+		 *   xor(0,0,0).
+		 *   xor(0,1,1).
+		 *   xor(1,0,1).
+		 *   xor(1,1,0).
+		 */
+		
+		xor(false,X,Y) <=> X=Y;
+		xor(X,false,Y) <=> X=Y;
+		xor(X,Y,false) <=> X=Y;
+		xor(true,X,Y) <=> neg(X,Y);
+		xor(X,true,Y) <=> neg(X,Y);
+		xor(X,Y,true) <=> neg(X,Y);
+		xor(X,X,Y) <=> Y=false;
+		xor(X,Y,X) <=> Y=false;
+		xor(Y,X,X) <=> Y=false;
+		xor(X,Y,A) \ xor(X,Y,B) <=> A=B;
+		xor(X,Y,A) \ xor(Y,X,B) <=> A=B;
+
+		/*
+		 * neg/2 specification
+		 *   neg(0,1).
+		 *   neg(1,0).
+		 */
+		
+		neg(false,X) <=> X=true;
+		neg(X,false) <=> X=true;
+		neg(true,X) <=> X=false;
+		neg(X,true) <=> X=false;
+                neg(X,X) <=> fail;
+		neg(X,Y) \ neg(Y,Z) <=> X=Z;	
+		neg(X,Y) \ neg(Z,Y) <=> X=Z;	
+		neg(Y,X) \ neg(Y,Z) <=> X=Z;	
+		// Interaction with other boolean constraints
+		neg(X,Y) \ and(X,Y,Z) <=> Z=false;
+		neg(Y,X) \ and(X,Y,Z) <=> Z=false;
+		neg(X,Z) , and(X,Y,Z) <=> X=true,Y=false,Z=false;
+		neg(Z,X) , and(X,Y,Z) <=> X=true,Y=false,Z=false;
+		neg(Y,Z) , and(X,Y,Z) <=> X=false,Y=true,Z=false;
+		neg(Z,Y) , and(X,Y,Z) <=> X=false,Y=true,Z=false;
+		neg(X,Y) \ or(X,Y,Z) <=> Z=true;
+		neg(Y,X) \ or(X,Y,Z) <=> Z=true;
+		neg(X,Z) , or(X,Y,Z) <=> X=false,Y=true,Z=true;
+		neg(Z,X) , or(X,Y,Z) <=> X=false,Y=true,Z=true;
+		neg(Y,Z) , or(X,Y,Z) <=> X=true,Y=false,Z=true;
+		neg(Z,Y) , or(X,Y,Z) <=> X=true,Y=false,Z=true;
+		neg(X,Y) \ xor(X,Y,Z) <=> Z=true;
+		neg(Y,X) \ xor(X,Y,Z) <=> Z=true;
+		neg(X,Z) \ xor(X,Y,Z) <=> Y=true;
+		neg(Z,X) \ xor(X,Y,Z) <=> Y=true;
+		neg(Y,Z) \ xor(X,Y,Z) <=> X=true;
+		neg(Z,Y) \ xor(X,Y,Z) <=> X=true;
+		neg(X,Y) , imp(X,Y) <=> X=false,Y=true;
+		neg(Y,X) , imp(X,Y) <=> X=false,Y=true;
+		
+		/*
+		 * imp/2 specification (implication)
+		 *   imp(0,0).
+		 *   imp(0,1).
+		 *   imp(1,1).
+		 */
+		
+		imp(false,X) <=> true;
+		imp(X,false) <=> X=false;
+		imp(true,X) <=> X=true;
+		imp(X,true) <=> true;
+		imp(X,X) <=> true;
+		imp(X,Y),imp(Y,X) <=> X=Y;
+
+	}
+}

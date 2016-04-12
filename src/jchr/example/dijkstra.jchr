@@ -1,0 +1,31 @@
+package jchr.example;
+
+import runtime.primitive.LogicalInt;
+import util.arithmetics.primitives.intUtil;
+import ud.fib_heap.FibHeapHandler;
+
+handler dijkstra {
+	solver FibHeapHandler;
+
+	constraints edge(int,int,int),
+		dijkstra(int),
+		scan(int,int),
+		relabel(int,int),
+		distance(int,int);
+
+	rules {
+		variable int A, L, N, N2, W;
+		variable LogicalInt QN, QW;
+
+		start_scanning @ dijkstra(A) <=> scan(A,0).
+
+		stop_scanning @ scan(0,A) <=> true.
+		label_neighb  @ 
+			scan(N,L), edge(N,N2,W)#X ==> relabel(N2, intUtil.add(L,W)) pragma passive(X).
+		scan_next @ 
+			scan(N,L) <=> distance(N,L), extract_min(QN,QW), scan(QN,QW).
+		
+		scanned 	@ distance(N,_)#X \ relabel(N,_) <=> true pragma passive(X).
+		not_scanned	@ relabel(N,L) <=> decr_or_ins(N,L).
+    }
+}

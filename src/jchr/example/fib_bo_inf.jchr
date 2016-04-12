@@ -1,0 +1,25 @@
+package jchr.example;
+
+import java.math.BigInteger;
+import util.arithmetics.primitives.intUtil;
+
+handler fib_bo_inf {
+    constraints init(), fib(int N, BigInteger M);
+ 
+    rules {
+        variable BigInteger M1, M2, M;
+        variable int N1, N; 
+ 
+        init() <=> fib(0, 1), fib(1, 1);
+ 
+        fib(N1, M1), fib(intUtil.inc(N1), M2) ==>                       
+             N = intUtil.add(N1, 2),  
+             M = M1.add(M2),
+ 
+             System.out.print(N),
+             System.out.print(" : "), 
+             System.out.println(M),
+ 
+             fib(N, M);
+    }
+}

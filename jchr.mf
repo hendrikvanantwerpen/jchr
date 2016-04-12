@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: jchr.example.test
+Class-Path: antlr-2.7.5.jar args4j.jar bsh-2.0b4.jar freemarker-2.3.6.jar
+
+

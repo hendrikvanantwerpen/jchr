@@ -1,0 +1,27 @@
+package jchr.example;
+
+import java.math.BigInteger;
+import runtime.Logical;
+import util.arithmetics.primitives.intUtil;
+
+handler fib {
+    solver runtime.EqualitySolver<BigInteger>;
+
+    constraint fib(int N, Logical<BigInteger> M);
+
+    rules {
+        variable Logical<BigInteger> M, M1, M2;
+        variable int N, N1, N2;
+        
+        fib(N,M1), fib(N,M2) <=> M1 = M2, fib(N, M1);
+
+        fib(0,M) ==> M = 1;
+    
+        fib(1,M) ==> M = 1;
+
+        fib(N,M) ==> N > 1 | 
+            N1 = intUtil.dec(N),    fib(N1,M1),
+            N2 = intUtil.sub(N, 2), fib(N2,M2),
+            M = M1.add(M2);
+    }
+}

@@ -1,0 +1,20 @@
+package jchr.example;
+
+
+
+import runtime.Logical;
+
+handler leq<T> {
+	solver runtime.EqualitySolver<T>;
+	
+	constraint leq(Logical<T>, Logical<T>) infix =<;
+	
+	rules {
+		variable Logical<T> X, Y, Z;
+		
+		reflexivity  @ X =< X <=> true.
+		antisymmetry @ X =< Y, Y =< X <=> X = Y.
+		idempotence  @ X =< Y \ X =< Y <=> true.
+		transitivity @ X =< Y , Y =< Z ==> X =< Z.
+    }
+}

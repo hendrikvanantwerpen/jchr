@@ -1,0 +1,25 @@
+import javax.swing.ImageIcon;
+import java.awt.*;
+import bsh.Interpreter;
+import bsh.Capabilities;
+import bsh.util.JConsole;
+
+printBanner() 
+{
+	if ( bsh.console != void 
+		&& Capabilities.haveSwing() 
+		&& (bsh.console instanceof JConsole) ) 
+	{
+
+	    this.jconsole = bsh.console;
+	    jconsole.println( 
+			new ImageIcon( getResource("/jchr/jchr_logo.png")) );
+	    jconsole.print( "JCHR.SF.NET",
+			new Font("Courier New", Font.BOLD, 14), 
+			new Color(80,120,180) );
+	    jconsole.println();
+
+	} else
+		print( "JCHR.SF.NET");
+
+}

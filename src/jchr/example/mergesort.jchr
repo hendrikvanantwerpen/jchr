@@ -1,0 +1,17 @@
+package jchr.example;
+
+import util.arithmetics.primitives.intUtil;
+
+handler mergesort<T extends Comparable<T>> {
+	constraint arrow(+T, +T);
+	constraint merge(int, +T);
+	
+	rules {
+		variable +T X, A, B;
+		variable int N;
+	
+		arrow(X,A) \ arrow(X,B) <=> A < B | arrow(A,B).
+	
+		merge(N,A), merge(N,B) <=> A < B | merge(intUtil.inc(N), A), arrow(A,B).
+	}
+}

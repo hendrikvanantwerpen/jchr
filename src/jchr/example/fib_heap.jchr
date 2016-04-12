@@ -1,0 +1,57 @@
+package jchr.example;
+
+import primitive.LogicalInt;
+import arithmetics.primitives.intUtil;
+
+handler fib_heap {
+	solver primitive.IntEqualitySolver;
+	
+	constraint extract_min(LogicalInt, LogicalInt);
+
+	constraints
+		insert(int,int), mark(int),
+		decr(int,int),   decr_or_ins(int,int),  ch2rt(int),
+		decr5(int, int, int, int, boolean), 
+		item(int, int, int, int, boolean), 
+		min(int,int), findmin();
+
+	rules {
+		variable int I, K, A, B, C, I1, I2, K1, K2, O, P, R;
+		variable boolean M;
+		variable LogicalInt X, Y;
+
+		insert @ insert(I,K) <=> item(I,K,0,0,false), min(I,K).
+		
+		keep_min @ min(_,A) \ min(_,B) <=> A =< B | true.
+		
+		extr        @ extract_min(X,Y), min(I,K)#X1, item(I,_,_,_,_)#Y1
+					<=> ch2rt(I), findmin(), X=I, Y=K pragma passive(X1, Y1).
+		extr_empty  @ extract_min(X,Y) <=>  X=0, Y=0, true.
+		
+		c2r      @ ch2rt(I) \ item(C,K,R,I,_)#X <=> item(C,K,R,0,false) pragma passive(X).
+		c2r_done @ ch2rt(I) <=> true.
+		
+		find_min  @ findmin(), item(I,K,_,0,_)#X ==> min(I,K) pragma passive(X).
+		found_min @ findmin() <=> true.
+		
+		same_rank @ item(I1,K1,R,0,_), item(I2,K2,R,0,_)#X
+	        <=> K1 =< K2 | item(I2,K2,R,I1,false), item(I1,K1,intUtil.inc(R),0,false) pragma passive(X).
+		
+		decr     @ decr(I,K), item(I,O,R,P,M)#X <=> K < O | decr5(I,K,R,P,M) pragma passive(X).
+		decr_nok @ decr(I,K) <=> true.
+		
+		doi_decrease @ item(I, O, R, P, M)#X , decr_or_ins(I,K) <=> K < O  | decr5(I,K,R,P,M) pragma passive(X).
+		doi_nop      @ item(I, O,_,_,_)#X \ decr_or_ins(I,K) <=> K >=O  | true pragma passive(X).
+		doi_insert   @ decr_or_ins(I,K) <=> insert(I,K).
+
+		d_min  @ decr5(I, K,_,_,_) ==> min(I,K).
+		d_root @ decr5(I, K, R, 0,_) <=> item(I,K,R,0,false).
+		d_ok   @ item(P, O,_,_,_)#X \ decr5(I,K,R,P,M) <=> K >= O | item(I,K,R,P,M) pragma passive(X).
+		d_prob @ decr5(I,K,R,P,M) <=> item(I,K,R,0,false), mark(P).
+
+		mark_root     @ mark(I), item(I,K,R,0,_)   #X <=> item(I,K,intUtil.dec(R),0,false) pragma passive(X).
+		mark_marked   @ mark(I), item(I,K,R,P,true) #X <=> item(I,K,intUtil.dec(R),0,false), mark(P) pragma passive(X).
+		mark_unmarked @ mark(I), item(I,K,R,P,false)#X <=> item(I,K,intUtil.dec(R),P,true) pragma passive(X).
+		error_mark    @ mark(I) <=> System.err.println("error_mark").
+	}
+}

@@ -1,0 +1,19 @@
+package jchr.example;
+
+import java.math.BigInteger;
+import util.arithmetics.primitives.intUtil;
+ 
+handler fib_bo2 {
+    constraints init(int Max), fib(int N, BigInteger M);
+ 
+    rules {
+        variable BigInteger M1, M2;
+        variable int N1, N2, Max;
+ 
+        init(Max) ==> fib(0, 1), fib(1, 1);
+ 
+        init(Max), fib(N2, M2) \ fib(N1, M1) <=>
+            N2 = intUtil.inc(N1), N2 < Max | fib(intUtil.inc(N2), M1.add(M2));
+        init(Max), fib(intUtil.dec(Max), _) <=>  true;
+    }
+}
